@@ -30,26 +30,28 @@ class BoundaryProblem:
         h1 = X_RANGE / N
         h2 = Y_RANGE / M
 
+        # CHECK THE INDEXING!!!
+
         for i in range(N):
             for j in range(M):
-                if i == 0:
+                if j == 0:
                     A[j + i * 5][i + 5 * j] = 1
                     b[j + i * 5] = self._boundary_conditions["left"]
                     continue
-                if i == 4:
+                if j == 4:
                     A[j + i * 5][i + 5 * j] = 1
                     b[j + i * 5] = self._boundary_conditions["right"]
                     continue
-                if j == 0:
+                if i == 0:
                     A[j + i * 5][i + 5 * j] = 1
                     b[j + i * 5] = self._boundary_conditions["bottom"]
                     continue
-                if j == 4:
+                if i == 4:
                     A[j + i * 5][i + 5 * j] = 1
                     b[j + i * 5] = self._boundary_conditions["top"]
                     continue
 
-                A[j + i * 5][i + 5 * j] = -(2 / (h1 ** 2) + 2 / (h2 ** 2))
+                A[j + i * 5][i + 5 * j] = -2 / (h1 ** 2) - 2 / (h2 ** 2)
                 A[j + i * 5][i + 5 * (j - 1)] = 1 / (h2 ** 2)
                 A[j + i * 5][i + 5 * (j + 1)] = 1 / (h2 ** 2)
                 A[j + i * 5][(i - 1) + 5 * j] = 1 / (h1 ** 2)

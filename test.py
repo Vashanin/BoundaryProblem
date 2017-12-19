@@ -8,7 +8,7 @@ class SolverValidation:
                 if abs(result[i][j] - expected[i][j]) > 1e-2:
                     equals = False
 
-        print("Actual answer")
+        print("\nActual answer")
         print(result)
         print("Expected result")
         print(expected)
