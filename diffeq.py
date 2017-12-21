@@ -74,15 +74,15 @@ class BoundaryProblem:
 
         for i in range(N - 2):
             for j in range(M - 2):
-                result[(N - 2) - 1 - i][j] = raw_res[(i + 1) + M * (j + 1)][0]
+                result[(N - 2) - 1 - i][j] = np.around(raw_res[(i + 1) + M * (j + 1)][0], 2)
 
         if disp:
             print("Input data\n"
-                  "\tTemperature\n"
-                  "\t\tTop: {}\n"
-                  "\t\tRight: {}\n"
-                  "\t\tBottom: {}\n"
-                  "\t\tLeft: {}\n"
+                  "\tTemperature on\n"
+                  "\t\tupper edge: {}\n"
+                  "\t\tright edge: {}\n"
+                  "\t\tlower edge: {}\n"
+                  "\t\tleft edge: {}\n"
                   "Computational data\n"
                   "\tStep size\n"
                   "\t\tby X axis: {}\n"
@@ -91,14 +91,12 @@ class BoundaryProblem:
                                                        self._boundary_conditions["right"],
                                                        self._boundary_conditions["bottom"],
                                                        self._boundary_conditions["left"],
-                                                       h1, h2, len(A)))
-            print("ANSWER")
-            print(result)
+                                                       h1, h2, len(A) - 4))
 
         return result
 
     @staticmethod
-    def validate(disp=False):
+    def is_valid(disp=False):
         """
         Method that compare expected test result and actual test result.
         
@@ -109,9 +107,6 @@ class BoundaryProblem:
 
         if disp:
             print("RUN METHOD WITH TEST DATA\n")
-            print("EXPECTED RESULT")
-            print(expected)
-            print("\n")
 
         result = BoundaryProblem(boundary_conditions=TEST_BOUNDARY_CONDITIONS,
                                  change_interval=(5, 5),
@@ -121,5 +116,11 @@ class BoundaryProblem:
             for j in range(len(result[i])):
                 if abs(result[i][j] - expected[i][j]) > 0.5:
                     equals = False
+        if disp:
+            print("EXPECTED RESULT")
+            print(expected)
+            print("ACTUAL RESULT")
+            print(result)
+            print("\n")
 
         return equals
