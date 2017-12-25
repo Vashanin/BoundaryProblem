@@ -1,10 +1,10 @@
 import numpy as np
 
 BOUNDARY_CONDITIONS = {
-    "top":    5,
-    "right":  49,
-    "bottom": 120,
-    "left":   78
+    "top":    1467,
+    "right":  1265,
+    "bottom": 171,
+    "left":   471
 }
 
 TEST_BOUNDARY_CONDITIONS = {

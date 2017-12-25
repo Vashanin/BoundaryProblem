@@ -18,6 +18,11 @@ class BoundaryProblem:
         self._change_interval = change_interval
         self._amount_of_sections = amount_of_sections
 
+        N, M = self._amount_of_sections
+
+        self.A = np.zeros(((N+1) * (M+1), (N+1) * (M+1)))
+        self.b = np.zeros(((N+1) * (M+1), 1))
+
     def solve(self, method="grid", disp=False):
         result = None
 
@@ -30,51 +35,51 @@ class BoundaryProblem:
         """
         Method that solve boundary problem using grid method
         
-        :param disp: boolean that dtermines whether to display details of calculations on the screen
+        :param disp: boolean that determines whether to display details of calculations on the screen
         :return: numpy array with grip result
         """
 
         N, M = self._amount_of_sections
         x_interval, y_interval = self._change_interval
 
-        A = np.zeros((N * M, N * M))
-        b = np.zeros((N * M, 1))
+        N += 1
+        M += 1
 
-        h1 = x_interval / N
-        h2 = y_interval / M
+        h1 = x_interval
+        h2 = y_interval
 
         for i in range(N):
             for j in range(M):
                 if j == 0:
-                    A[j + i * N][i + M * j] = 1
-                    b[j + i * N] = self._boundary_conditions["left"]
+                    self.A[j + i * M][i + N * j] = 1
+                    self.b[j + i * M] = self._boundary_conditions["left"]
                     continue
                 if j == M - 1:
-                    A[j + i * N][i + M * j] = 1
-                    b[j + i * N] = self._boundary_conditions["right"]
+                    self.A[j + i * M][i + N * j] = 1
+                    self.b[j + i * M] = self._boundary_conditions["right"]
                     continue
                 if i == 0:
-                    A[j + i * N][i + M * j] = 1
-                    b[j + i * N] = self._boundary_conditions["bottom"]
+                    self.A[j + i * M][i + N * j] = 1
+                    self.b[j + i * M] = self._boundary_conditions["bottom"]
                     continue
                 if i == N - 1:
-                    A[j + i * N][i + M * j] = 1
-                    b[j + i * N] = self._boundary_conditions["top"]
+                    self.A[j + i * M][i + N * j] = 1
+                    self.b[j + i * M] = self._boundary_conditions["top"]
                     continue
 
-                A[j + i * N][i + M * j] = -2 / (h1 ** 2) - 2 / (h2 ** 2)
-                A[j + i * N][i + M * (j - 1)] = 1 / (h2 ** 2)
-                A[j + i * N][i + M * (j + 1)] = 1 / (h2 ** 2)
-                A[j + i * N][(i - 1) + M * j] = 1 / (h1 ** 2)
-                A[j + i * N][(i + 1) + M * j] = 1 / (h1 ** 2)
+                self.A[j + i * M][i + N * j] = -2 / (h1 ** 2) - 2 / (h2 ** 2)
+                self.A[j + i * M][i + N * (j - 1)] = 1 / (h2 ** 2)
+                self.A[j + i * M][i + N * (j + 1)] = 1 / (h2 ** 2)
+                self.A[j + i * M][(i - 1) + N * j] = 1 / (h1 ** 2)
+                self.A[j + i * M][(i + 1) + N * j] = 1 / (h1 ** 2)
 
-        raw_res = np.linalg.solve(A, b)
+        raw_res = np.linalg.solve(self.A, self.b)
 
         result = np.empty((N - 2, M - 2))
 
         for i in range(N - 2):
             for j in range(M - 2):
-                result[(N - 2) - 1 - i][j] = np.around(raw_res[(i + 1) + M * (j + 1)][0], 2)
+                result[(N - 2) - 1 - i][j] = np.around(raw_res[(i + 1) + N * (j + 1)][0], 2)
 
         if disp:
             print("Input data\n"
@@ -91,9 +96,15 @@ class BoundaryProblem:
                                                        self._boundary_conditions["right"],
                                                        self._boundary_conditions["bottom"],
                                                        self._boundary_conditions["left"],
-                                                       h1, h2, len(A) - 4))
+                                                       h1, h2, len(self.A) - 4))
 
         return result
+
+    def get_a(self):
+        return self.A
+
+    def get_b(self):
+        return self.b
 
     @staticmethod
     def is_valid(disp=False):
